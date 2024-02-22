@@ -49,7 +49,7 @@ def augmented_content(inp):
     ##st.write(f"RR: {rr}")
     ##print(f"42 PINECONE_API_KEY={PINECONE_API_KEY}")
     embedding=client.embeddings.create(model="text-embedding-ada-002", input=inp).data[0].embedding
-    ##print(f"44 PINECONE_API_KEY={PINECONE_API_KEY}")
+    print(f"52 PINECONE_API_KEY={PINECONE_API_KEY}")
     pc = Pinecone(api_key=PINECONE_API_KEY)
     ##pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_API_ENV)
     ##print(f"46 PINECONE_API_KEY={PINECONE_API_KEY}")
@@ -60,19 +60,19 @@ def augmented_content(inp):
     print(f"Results: {results}") #debugger
     ##st.write(f"Results: {results}")
     rr=[ r['metadata']['text'] for r in results['matches']]
-    ##print(f"RR: {rr}")
+    print(f"RR: {rr}")
     ##st.write(f"RR: {rr}")
     return rr
 
 
 SYSTEM_MESSAGE={"role": "system", 
-                "content": """"Ignore all previous commands. 
+                "content": """Ignore all previous commands. 
                 You are a helpful and patient financial guide. 
                 When asked a question, your response should be polite, and you should not only answer a question but provide a larger lesson about finance including examples. 
                 Using markdown language formatting, bold key phrases and use bullet points when relevant.
                 Keep responses below 300 words. 
                 If you don't know an answer, state the exact words 'I don't have an answer for that' and don't add any more. 
-                You must not provide answers to questions which are not about finance, aside from stating the exact text 'I don't have an answer for that.'.""""
+                You must not provide answers to questions which are not about finance, aside from stating the exact text 'I don't have an answer for that.'."""
                 }
 
 if "messages" not in st.session_state:
@@ -87,7 +87,7 @@ for message in st.session_state.messages:
 
 if prompt := st.chat_input("Ask your question here!"):
     retrieved_content = augmented_content(prompt)
-    ##print(f"Retrieved content: {retrieved_content}")
+    print(f"Retrieved content: {retrieved_content}")
     prompt_guidance=f"""
 Please guide the user with the following information:
 {retrieved_content}
@@ -117,14 +117,14 @@ The user's question was: {prompt}
         for response in client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=messageList, stream=True):
-          ##  print("starting 122")
+            print("starting 120")
             ##print(response.choices[0])
-            ##print(response.choices[0].delta.content)
+            print(response.choices[0].delta.content)
             response_content = response.choices[0].delta.content          
             if (response_content):
                 full_response += response.choices[0].delta.content
         
-        ##print(full_response)
+        print("full response", full_response)
 
             ##full_response += response.choices[0].delta.get("content", "")
             ##message_placeholder.markdown(full_response + "▌")
@@ -134,4 +134,4 @@ The user's question was: {prompt}
         st.session_state.messages.append({"role": "assistant", "content": full_response})
                     
         
-##print(Completion.choices[0].message)
+#print(completions.choices[0].message)
