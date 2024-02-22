@@ -2,8 +2,8 @@ import time
 
 import numpy as np
 
-import openai
-import pinecone
+from pinecone import Pinecone
+from openai import OpenAI
 import streamlit as st
 import os
 
@@ -32,21 +32,36 @@ os.environ['PINECONE_INDEX_NAME']='pinecone-index'
 PINECONE_API_KEY=st.secrets['PINECONE_API_KEY']
 PINECONE_API_ENV=os.environ['PINECONE_API_ENV']
 PINECONE_INDEX_NAME=os.environ['PINECONE_INDEX_NAME']
-openai.api_key=st.secrets['OPENAI_API_KEY']
+client=OpenAI(ai_api_key=st.secrets['OPENAI_API_KEY'])
 
 def augmented_content(inp):
-    # Create the embedding using OpenAI keys
-    # Do similarity search using Pinecone
-    # Return the top 5 results
-    embedding=openai.Embedding.create(model="text-embedding-ada-002", input=inp)['data'][0]['embedding']
-    pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_API_ENV)
-    index = pinecone.Index(PINECONE_INDEX_NAME)
-    results=index.query(embedding,top_k=3,include_metadata=True)
-    #print(f"Results: {results}")
-    #st.write(f"Results: {results}")
+    ## Create the embedding using OpenAI keys
+    ## Do similarity search using Pinecone
+    ## Return the top 5 results
+    ##embedding=openai.Embedding.create(model="text-embedding-ada-002", input=inp)['data'][0]['embedding'] 
+    ##pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_API_ENV) 
+    ##index = pinecone.Index(PINECONE_INDEX_NAME) 
+    ##results=index.query(embedding,top_k=3,include_metadata=True) 
+    ##print(f"Results: {results}")
+    ##st.write(f"Results: {results}")
+    ##rr=[ r['metadata']['text'] for r in results['matches']] 
+    ##print(f"RR: {rr}")
+    ##st.write(f"RR: {rr}")
+    ##print(f"42 PINECONE_API_KEY={PINECONE_API_KEY}")
+    embedding=client.embeddings.create(model="text-embedding-ada-002", input=inp).data[0].embedding
+    ##print(f"44 PINECONE_API_KEY={PINECONE_API_KEY}")
+    pc = Pinecone(api_key=PINECONE_API_KEY)
+    ##pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_API_ENV)
+    ##print(f"46 PINECONE_API_KEY={PINECONE_API_KEY}")
+    ##index = pinecone.Index(PINECONE_INDEX_NAME)
+    index = pc.Index(PINECONE_INDEX_NAME)
+    ##print(f"48 PINECONE_API_KEY={PINECONE_API_KEY}")
+    results=index.query(vector=embedding,top_k=3,include_metadata=True)
+    print(f"Results: {results}") #debugger
+    ##st.write(f"Results: {results}")
     rr=[ r['metadata']['text'] for r in results['matches']]
-    #print(f"RR: {rr}")
-    #st.write(f"RR: {rr}")
+    ##print(f"RR: {rr}")
+    ##st.write(f"RR: {rr}")
     return rr
 
 
@@ -72,7 +87,7 @@ for message in st.session_state.messages:
 
 if prompt := st.chat_input("Ask your question here!"):
     retrieved_content = augmented_content(prompt)
-    #print(f"Retrieved content: {retrieved_content}")
+    ##print(f"Retrieved content: {retrieved_content}")
     prompt_guidance=f"""
 Please guide the user with the following information:
 {retrieved_content}
@@ -89,12 +104,34 @@ The user's question was: {prompt}
                       for m in st.session_state.messages]
         messageList.append({"role": "user", "content": prompt_guidance})
         
-        for response in openai.ChatCompletion.create(
+        ##for response in openai.ChatCompletion.create( 
+          ##  model="gpt-3.5-turbo", 
+           ## messages=messageList, stream=True): 
+            ##full_response += response.choices[0].delta.get("content", "") 
+            ##message_placeholder.markdown(full_response + "▌") 
+        ##message_placeholder.markdown(full_response) 
+    ##with st.sidebar.expander("Retrieval context provided to GPT-3"):
+     ##   st.write(f"{retrieved_content}")
+    ##st.session_state.messages.append({"role": "assistant", "content": full_response}) 
+
+        for response in client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=messageList, stream=True):
-            full_response += response.choices[0].delta.get("content", "")
-            message_placeholder.markdown(full_response + "▌")
+          ##  print("starting 122")
+            ##print(response.choices[0])
+            ##print(response.choices[0].delta.content)
+            response_content = response.choices[0].delta.content          
+            if (response_content):
+                full_response += response.choices[0].delta.content
+        
+        ##print(full_response)
+
+            ##full_response += response.choices[0].delta.get("content", "")
+            ##message_placeholder.markdown(full_response + "▌")
+        ##message_placeholder.markdown(full_response)
+        ##Choice(delta=ChoiceDelta(content=' finance', function_call=None, role=None, tool_calls=None), finish_reason=None, index=0, logprobs=None)
         message_placeholder.markdown(full_response)
-    #with st.sidebar.expander("Retrieval context provided to GPT-3"):
-     #   st.write(f"{retrieved_content}")
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
+        st.session_state.messages.append({"role": "assistant", "content": full_response})
+                    
+        
+##print(Completion.choices[0].message)
