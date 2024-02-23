@@ -1,18 +1,19 @@
 import streamlit as st
 import pandas as pd
-import openai
+from openai import OpenAI
 
 st.set_page_config(
     page_title="Home | Money Matters",
     page_icon="Personalized.png",
 )
-
+print("set page config")
 #title the page
 #st.title("Money Matters!")
 #display an image
 st.image("Personalized.png", width=400)
 
 st.title("About the website")
+print("set page title and image")
 st.write("""
          **:green[Welcome to Money Matters!]** Here, we hope to help you take charge of your financial destiny 
          by learning about personal finance. 
@@ -25,7 +26,7 @@ st.write("""
          We have augmented our AI using a set of carefully curated resources from reputable sources such as Khan Academy, the Federal Reserve Bank of St. Louis, TED-Ed, DardenMBA, PBS, and moneyinstructor.com, and *greatly appreciate* being able to build on their great work.
          """)
 
-
+print("reached the end")
 
 #create two tabs and add elements to each
 # asktab, learntab = st.tabs(["Ask", "Learn"])

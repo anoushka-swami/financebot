@@ -1,10 +1,12 @@
-import openai
+from openai import OpenAI
 import streamlit as st
 
 st.set_page_config(
     page_title="Analyze | Money Matters",
     page_icon="Personalized.png",
 )
+
+client = OpenAI()
 
 (column1,column2)=st.columns([3,7])
 column1.image("Personalized.png", width=100)
@@ -49,11 +51,13 @@ if prompt := st.chat_input("Please paste the financial information/press release
     with st.chat_message("assistant", avatar=avatars["assistant"]):
         message_placeholder = st.empty()
         full_response = ""
-        for response in openai.ChatCompletion.create(
+        for response in client.chat.completions.create(
             model="gpt-4",
             messages=[{"role": m["role"], "content": m["content"]}
                       for m in st.session_state.messages], stream=True):
-            full_response += response.choices[0].delta.get("content", "")
+            response_content = response.choices[0].delta.content
+            if (response_content):
+                full_response += response.choices[0].delta.content
             message_placeholder.markdown(full_response + "▌")
         message_placeholder.markdown(full_response)
     st.session_state.messages.append({"role": "assistant", "content": full_response})

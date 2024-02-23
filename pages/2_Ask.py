@@ -2,8 +2,8 @@ import time
 
 import numpy as np
 
-from pinecone import Pinecone
-from openai import OpenAI
+from pinecone import Pinecone 
+from openai import OpenAI 
 import streamlit as st
 import os
 
@@ -32,7 +32,7 @@ os.environ['PINECONE_INDEX_NAME']='pinecone-index'
 PINECONE_API_KEY=st.secrets['PINECONE_API_KEY']
 PINECONE_API_ENV=os.environ['PINECONE_API_ENV']
 PINECONE_INDEX_NAME=os.environ['PINECONE_INDEX_NAME']
-client=OpenAI(ai_api_key=st.secrets['OPENAI_API_KEY'])
+client=OpenAI(api_key=st.secrets['OPENAI_API_KEY'])
 
 def augmented_content(inp):
     ## Create the embedding using OpenAI keys
@@ -115,7 +115,7 @@ The user's question was: {prompt}
     ##st.session_state.messages.append({"role": "assistant", "content": full_response}) 
 
         for response in client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4",
             messages=messageList, stream=True):
             print("starting 120")
             ##print(response.choices[0])
