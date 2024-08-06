@@ -15,8 +15,8 @@ st.image("Personalized.png", width=400)
 st.title("About the website")
 print("set page title and image")
 st.write("""
-         **:green[Welcome to Money Matters!]** Here, we hope to help you take charge of your financial destiny 
-         by learning about personal finance. 
+         **:green[Welcome to Money Matters!]** In 2023, Money Matters won the Congressional App Challenge for California's District 15 due to its civic impact potential. Here, we hope to help you take charge of your financial destiny 
+         by learning about personal finance.
          
          - With the **:green[learn]** page, you can learn or refresh key personal finance concepts.
          - With the **:green[ask]** page, you can ask our Chat-GPT-based AI any burning finance questions you have. It has been augmented to ensure specificity and reliability.
